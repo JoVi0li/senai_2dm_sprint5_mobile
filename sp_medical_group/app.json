@@ -1,0 +1,32 @@
+{
+  "expo": {
+    "name": "sp_medical_group",
+    "slug": "sp_medical_group",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/img/logo.png",
+    "splash": {
+      "image": "./assets/img/logo.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "updates": {
+      "fallbackToCacheTimeout": 0
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/img/logo.png",
+        "backgroundColor": "#FFFFFF"
+      }
+    },
+    "web": {
+      "favicon": "./assets/img/logo.png"
+    }
+  }
+}
