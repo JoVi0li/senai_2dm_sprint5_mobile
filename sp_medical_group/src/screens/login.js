@@ -19,8 +19,17 @@ export default class Login extends Component{
         }
     }
 
-    efetuarLogin = () => {
-        this.props.navigation.navigate('Paciente');
+    efetuarLogin = async () => {
+        const resposta = await api.post('/login', {
+            email: this.state.email,
+            senha: this.state.senha
+        });
+
+        const token = resposta.data.token;
+
+        await AsyncStorage.setItem('userToken', token);
+
+        this.props.navigation.navigate('Main')
     }
 
     render(){
@@ -37,7 +46,6 @@ export default class Login extends Component{
                         onChangeText={email => this.setState({email})}
                         placeholder='Digite seu e-mail'
                         placeholderTextColor='#7D7878'
-                        textAlign='center'
 
                     />
                     <TextInput
@@ -46,7 +54,6 @@ export default class Login extends Component{
                         onChangeText={senha => this.setState({senha})}
                         placeholder='Digite sua senha'
                         placeholderTextColor='#7D7878'
-                        textAlign='center'
                     />
                     <TouchableOpacity
                         style={styles.button}
@@ -63,13 +70,13 @@ export default class Login extends Component{
 const styles = StyleSheet.create({
     container: {
       flex: 1,
-      width: '95%',
+      width: '100%',
       alignSelf: 'center',
       backgroundColor: '#fff',
       alignItems: 'center',
     },
     imgTextContent: {
-        width: '100%',
+        width: '95%',
         flex: 1,
         alignItems: 'center',
         justifyContent: 'space-between',
@@ -78,7 +85,7 @@ const styles = StyleSheet.create({
     },
     img: {
         width: 107,
-        height: 100
+        height: 115,
     },
     text: {
         fontSize: 36,
@@ -95,6 +102,10 @@ const styles = StyleSheet.create({
         backgroundColor: '#F1F1F1',
         borderRadius: 30,
         marginBottom: 30,
+        textAlign: 'center',
+        fontSize: 18,
+    },
+    inputEmail: {
     },
     button: {
         width: '50%',
@@ -103,7 +114,7 @@ const styles = StyleSheet.create({
         backgroundColor: 'red',
         alignSelf: 'center',
         borderRadius: 30,
-        backgroundColor: '#83BEDF'
+        backgroundColor: '#83BEDF',
     },
     buttonText: {
         fontSize: 24,

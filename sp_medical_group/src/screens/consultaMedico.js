@@ -1,26 +1,51 @@
-import { StatusBar } from 'expo-status-bar';
 import React, { Component } from 'react';
 import { StyleSheet, Text, View, Image, FlatList } from 'react-native';
-import api from '../services/api';
-import user from '../../assets/img/user.png';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import jwtDecode from 'jwt-decode';
 
-export default class App extends Component {
+import api from '../services/api';
+import doctor from '../../assets/img/medico.png';
+
+export default class Medico extends Component {
   constructor(props) {
     super(props);
     this.state = {
       listaConsultas: [],
-      nome: 'Médico'
+      nome: '',
+      email: '',
+      idMedico: 0
     }
   }
 
   buscarConsulta = async () => {
-    const resposta = await api.get('/Consultum');
+    const valorToken = await AsyncStorage.getItem('userToken')
+
+    const resposta = await api.get('/Consultum/GetByIdDoctor/'+ this.state.idMedico, {
+      headers: {
+        'Authorization' : 'Bearer ' + valorToken
+      }
+    });
 
     this.setState({ listaConsultas: resposta.data });
+  }
 
+  buscarDadosStorage = async () =>{
+    try {
+      const valorToken = await AsyncStorage.getItem('userToken');
+
+      jwtDecode(valorToken);
+
+      if (valorToken != null) {
+        this.setState({nome: jwtDecode(valorToken).name})
+        this.setState({idMedico: jwtDecode(valorToken).jti})
+      }
+    } catch (error) {
+      console.warn(error)
+    }
   }
 
   componentDidMount() {
+    this.buscarDadosStorage();
     this.buscarConsulta();
   }
 
@@ -29,7 +54,7 @@ export default class App extends Component {
       <View style={styles.container}>
         <View style={styles.header}>
           <Text style={styles.headerText}>Olá, {this.state.nome}!</Text>
-          <Image style={styles.headerImg} source={user} />
+          <Image style={styles.headerImg} source={doctor} />
         </View>
 
         <View style={styles.titleContainer}>
@@ -52,7 +77,8 @@ export default class App extends Component {
     <View style={styles.listItemRow}>
       <View style={styles.listItemContainer}>
         <Text style={styles.listItemSituacao}>Situação: {item.situacao}</Text>
-        <Text style={styles.listItemInfo}>Médico: {item.idMedico}</Text>
+        <Text style={styles.listItemInfo}>Médico: {item.idMedicoNavigation.nome}</Text>
+        <Text style={styles.listItemInfo}>Paciente: {item.idProntuarioNavigation.nome}</Text>
         <Text style={styles.listItemInfo}>Data: {Intl.DateTimeFormat('pt-BR').format(new Date(item.dataConsulta))}</Text>
       </View>
     </View>
@@ -62,14 +88,14 @@ export default class App extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    width: '95%',
+    width: '100%',
     alignSelf: 'center',
     backgroundColor: '#fff',
     alignItems: 'center',
     justifyContent: 'space-between'
   },
   header: {
-    width: '100%',
+    width: '95%',
     height: 50,
     flexDirection: 'row',
     justifyContent: 'space-between',
